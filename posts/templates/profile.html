@@ -1,80 +1,55 @@
-{% extends "base.html" %}
-
-{% block title %} {{ prof.0.author }} {% endblock %}
-{% block header %} Записи пользователя: {{ prof.0.author }} {% endblock %}
-
+{% extends "base.html" %} 
+{% block title %} {{ profile.get_full_name }} @{{ profile.username }}{% endblock %}
 {% block content %}
+{% load thumbnail %}
 
 <main role="main" class="container">
-    <div class="row">
-            <div class="col-md-3 mb-3 mt-1">
-                    <div class="card">
-                            <div class="card-body">
-                                    <div class="h2">
-                                        <!-- Имя автора -->
-                                        {{ prof.0.author }}
-
-                                    </div>
-                                    <div class="h3 text-muted">
-
-                                         <!-- username автора -->
-
-                                         @{{ prof.0.author }}
-                                    </div>
-                            </div>
-                            <ul class="list-group list-group-flush">
-                                    <li class="list-group-item">
-                                            <div class="h6 text-muted">
-                                            Подписчиков: XXX <br />
-                                            Подписан: XXX
-                                            </div>
-                                    </li>
-                                    <li class="list-group-item">
-                                            <div class="h6 text-muted">
-                                                <!-- Количество записей -->
-                                                Записей: {{ prof.count }}
-                                            </div>
-                                    </li>
-                            </ul>
-                    </div>
+  <div class="row">
+    <div class="col-md-3 mb-3 mt-1">
+      <div class="card">
+        <div class="card-body">
+          <div class="h2">
+            {{ profile.get_full_name }}
+          </div>
+          <div class="h3 text-muted">
+            @{{ profile.username }}
+          </div>
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item">
+            {% if user != profile %}
+              {% if following %}
+                <a class="btn btn-lg btn-light" href="{% url 'profile_unfollow' profile.username %}" role="button"> 
+                  Отписаться 
+                </a> 
+              {% else %}
+                <a class="btn btn-lg btn-primary" href="{% url 'profile_follow' profile.username %}" role="button">
+                  Подписаться 
+                </a>
+              {% endif %}
+            {% endif %}
+            <div class="h6 text-muted">
+              Подписчиков: {{ profile.following_count }} <br />
+              Подписан: {{ profile.follower_count }}
             </div>
-
-            <div class="col-md-9">
-                {% for posts in page %}
-                <!-- Начало блока с отдельным постом -->
-                    <div class="card mb-3 mt-1 shadow-sm">
-                            <div class="card-body">
-                                    <p class="card-text">
-                                            <!-- Ссылка на страницу автора в атрибуте href; username автора в тексте ссылки -->
-                                            <a href={% url 'profile' posts.author %}><strong class="d-block text-gray-dark">{{ posts.author }}</strong></a>
-                                            <!-- Текст поста -->
-                                            {{ posts.text }}
-                                    </p>
-                                    <div class="d-flex justify-content-between align-items-center">
-                                            <div class="btn-group ">
-                                                    <!-- Ссылка на страницу записи в атрибуте href-->
-                                                    <a class="btn btn-sm text-muted" href={% url 'post_view' posts.author posts.pk %} role="button">Добавить комментарий</a>
-                                                    <!-- Ссылка на редактирование, показывается только автору записи -->
-                                                    {% if user == posts.author %}
-
-                                                    <a class="btn btn-sm text-muted" href={% url 'post_edit' posts.author posts.pk %} role="button">Редактировать</a>
-                                                    {% endif %}
-                                            </div>
-                                            <!-- Дата публикации  -->
-                                            <small class="text-muted">{{ posts.pub_date }}</small>
-                                    </div>
-                            </div>
-                    </div>
-                <!-- Конец блока с отдельным постом -->
-                {% endfor %}
-                <!-- Остальные посты -->
-
-                <!-- Здесь постраничная навигация паджинатора -->
-                {% if page.has_other_pages %}
-                    {% include "paginator.html" with items=page paginator=paginator %}
-                {% endif %}
-     </div>
+          </li>
+          <li class="list-group-item">
+            <div class="h6 text-muted">
+              Записей: {{ paginator.count }}
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
-</main>
 
-{% endblock  %}
+    <div class="col-md-9"> 
+    {% for post in page %}
+      {% include "post_item.html" with post=post %}
+    {% endfor %}
+    </div>
+  </div>
+  {% if page.has_other_pages %}
+    {% include "paginator.html" with items=page paginator=paginator%}
+  {% endif %}
+</main>
+{% endblock %}
