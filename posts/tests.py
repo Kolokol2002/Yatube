@@ -1,9 +1,12 @@
-from django.test import TestCase, Client
-from django.contrib.auth import get_user_model
+import tempfile
 
-from posts.models import Post
+from django.core import mail
+from django.core.cache import cache
+from django.test import Client, TestCase, override_settings
 
-User = get_user_model()
+from posts.models import Follow, Group, Post, User
+
+# User = get_user_model()
 
 class ProfileTest(TestCase):
     def setUp(self):
@@ -23,9 +26,10 @@ class ProfileTest(TestCase):
         self.assertEqual(response.status_code, 200)
         #После публикации поста новая запись появляется на главной странице сайта (index), на персональной странице
         #пользователя (profile), и на отдельной странице поста (post)
-        self.assertEqual(response.context["prof"][0], self.post)
+        # print(response.context)
+        self.assertEqual(response.context["post"], self.post)
         response = self.client.get("")
-        self.assertEqual(response.context["post_list"][0], self.post)
+        self.assertEqual(response.context["post"], self.post)
 
     def test_new_post(self):
         #Авторизованный пользователь может опубликовать пост (new)
@@ -69,28 +73,33 @@ class PostsImgTest(TestCase):
     '''Тестирование возможности добавления изображений к публикациям'''
     def setUp(self):
         self.client = Client()
-        User.objects.create_user(username="testUser",
-                                 email="test@user.com",
-                                 password="*yxW$kE8",
-                                 first_name="Test",
-                                 last_name="User")
+        self.user = User.objects.create_user(username="testUser",
+                                             email="test@user.com",
+                                             password="*yxW$kE8",
+                                             first_name="Test",
+                                             last_name="User")
+
         self.group = Group.objects.create(title='Test Group',
                                           slug='testgroup',
                                           description='A test group')
+
         self.client.login(username="testUser", password="*yxW$kE8")
 
     def test_img_upload(self):
-        with open('test-img.jpg', 'rb') as fp:
-            self.client.post(
-                '/new/', {'group': 1, 'text': 'Test post', 'image': fp, })
-        response = self.client.get('/testUser/1/')
-        self.assertContains(response, '<img class="card-img"', status_code=200)
-        response = self.client.get('/')
-        self.assertContains(response, '<img class="card-img"', status_code=200)
-        response = self.client.get('/testUser/')
-        self.assertContains(response, '<img class="card-img"', status_code=200)
-        response = self.client.get('/group/testgroup/')
-        self.assertContains(response, '<img class="card-img"', status_code=200)
+
+        post = Post.objects.create(author=self.user,
+                                    text='Post with img',
+                                    group=self.group,
+                                    image='test-img.jpg')
+
+        urls = ["",
+                f'/{self.user}/',
+                f'/{self.user.username}/{post.id}/',
+                f'/group/{self.group.slug}/']
+
+        for urls in urls:
+            response = self.client.get(urls)
+            self.assertContains(response, '<img class="card-img"', status_code=200)
 
     def test_file_upload(self):
         with open('test-file.txt', 'rb') as fp:
