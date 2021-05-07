@@ -72,6 +72,7 @@ class ErrorsTest(TestCase):
 class PostsImgTest(TestCase):
     '''Тестирование возможности добавления изображений к публикациям'''
     def setUp(self):
+
         self.client = Client()
         self.user = User.objects.create_user(username="testUser",
                                              email="test@user.com",
@@ -92,10 +93,10 @@ class PostsImgTest(TestCase):
                                     group=self.group,
                                     image='test-img.jpg')
 
-        urls = ["",
-                f'/{self.user}/',
+        urls = [f'/{self.user}/',
                 f'/{self.user.username}/{post.id}/',
-                f'/group/{self.group.slug}/']
+                f'/group/{self.group.slug}/',
+                "",]
 
         for urls in urls:
             response = self.client.get(urls)
