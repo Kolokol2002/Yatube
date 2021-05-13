@@ -7,20 +7,30 @@ from django.utils import timezone
 from .forms import CommentForm, GroupForm, PostForm
 from .models import Comment, Follow, Group, Post, User
 
+from django.views.generic import ListView
 
-def index(request):
-    '''Главная страница'''
-    post_list = Post.objects.select_related(
-        'author', 'group').annotate(
-            comment_count=Count('commented_post')).order_by("-pub_date").all()
-    paginator = Paginator(post_list, 10)
-    page_number = request.GET.get('page')
-    page = paginator.get_page(page_number)
-    index_page = True
-    return render(request, "index.html", {'page': page,
-                                          'paginator': paginator,
-                                          'index_page': index_page})
+class Index(ListView):
+    model = Post
+    template_name = 'index.html'
+    paginate_by = 5
+    context_object_name = 'post_list'
+    extra_context = {
+        'index_page': True
+    }
 
+# def index(request):
+#     '''Главная страница'''
+#     post_list = Post.objects.select_related(
+#         'author', 'group').annotate(
+#             comment_count=Count('commented_post')).order_by("-pub_date").all()
+#     paginator = Paginator(post_list, 10)
+#     page_number = request.GET.get('page')
+#     page = paginator.get_page(page_number)
+#     index_page = True
+#     return render(request, "index.html", {'page': page,
+#                                           'paginator': paginator,
+#                                           'index_page': index_page})
+#
 
 def group_posts(request, slug):
     '''Страница с публикиями связанными с группой'''

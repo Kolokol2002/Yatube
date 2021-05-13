@@ -8,7 +8,7 @@
     <h1> Последние обновления на сайте</h1>
       {% load cache %}
       {% cache 20 index_page page request.user.username %}
-      {% for post in page %}
+      {% for post in post_list %}
         {% include "post_item.html" with post=post %}
       {% endfor %}  
       {% endcache %}

@@ -74,35 +74,41 @@ class PostsImgTest(TestCase):
     def setUp(self):
 
         self.client = Client()
-        self.user = User.objects.create_user(username="testUser",
-                                             email="test@user.com",
-                                             password="*yxW$kE8",
-                                             first_name="Test",
-                                             last_name="User")
 
         self.group = Group.objects.create(title='Test Group',
                                           slug='testgroup',
                                           description='A test group')
 
-        self.client.login(username="testUser", password="*yxW$kE8")
-
     def test_img_upload(self):
+        user = User.objects.create_user(username="testUserImg",
+                                        email="test@user.com",
+                                        password="*yxW$kE8",
+                                        first_name="Test",
+                                        last_name="User")
+        self.client.login(username="testUserImg", password="*yxW$kE8")
 
-        post = Post.objects.create(author=self.user,
+        post = Post.objects.create(author=user,
                                     text='Post with img',
                                     group=self.group,
                                     image='test-img.jpg')
 
-        urls = [f'/{self.user}/',
-                f'/{self.user.username}/{post.id}/',
+        urls = [f'/{user}/',
+                f'/{user.username}/{post.id}/',
                 f'/group/{self.group.slug}/',
                 "",]
 
         for urls in urls:
             response = self.client.get(urls)
-            self.assertContains(response, '<img class="card-img"', status_code=200)
+            self.assertContains(response, 'img_posts"', status_code=200)
 
     def test_file_upload(self):
+        User.objects.create_user(username="testUserFile",
+                                email="test@user.com",
+                                password="*yxW$kE8",
+                                first_name="Test",
+                                last_name="User")
+        self.client.login(username="testUserFile", password="*yxW$kE8")
+
         with open('test-file.txt', 'rb') as fp:
             response = self.client.post(
                 '/new/', {'group': 1, 'text': 'Test post', 'image': fp, })

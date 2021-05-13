@@ -4,6 +4,8 @@
 # Datasource local storage ignored files
 /../../../../../../:\Users\maksk\Desktop\Yatube\.idea/dataSources/
 /dataSources.local.xml
+/media/
+.env
 # Editor-based HTTP Client requests
 /httpRequests/
-/media/
+
