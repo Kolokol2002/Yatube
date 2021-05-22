@@ -6,6 +6,15 @@
   {% include "menu.html" with index=True %}
   <div class='table'>
     <h1> Последние обновления на сайте</h1>
+        {% if messages %}
+
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }}" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+            {% endif %}
       {% load cache %}
       {% cache 20 index_page page request.user.username %}
       {% for post in post_list %}
@@ -13,8 +22,8 @@
       {% endfor %}  
       {% endcache %}
   </div>
-  {% if page.has_other_pages %}
-      {% include "paginator.html" with items=page paginator=paginator%}
+  {% if page_obj.has_other_pages %}
+      {% include "paginator.html" with items=page_obj paginator=paginator%}
   {% endif %}
 </main>
 

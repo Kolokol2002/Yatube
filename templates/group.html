@@ -34,13 +34,22 @@
       </div>
     </div>
     <div class="col-md-9">
-      {% for post in page %}
-        {% include "post_item.html" with post=post %} 
+      {% for post in post_list %}
+        {% include "post_item.html" with post=post %}
       {% endfor %}
+        {% if messages %}
+
+          {% for message in messages %}
+              <div class="alert alert-{{ message.tags }}" role="alert">
+                  {{ message }}
+              </div>
+          {% endfor %}
+
+      {% endif %}
     </div>
   </div>
-    {% if page.has_other_pages %}
-      {% include "paginator.html" with items=page paginator=paginator%}
+    {% if post_list.has_other_pages %}
+      {% include "paginator.html" with items=post_list paginator=paginator%}
     {% endif %}
 </main>
 {% endblock %}

@@ -49,6 +49,13 @@
       <div class="card mb-3 shadow-sm">
         {% include "post_item.html" with post=post %}
         <div class="card-body">
+            {% if messages %}
+              {% for message in messages %}
+                  <div class="alert alert-{{ message.tags }}" role="alert">
+                      {{ message }}
+                  </div>
+              {% endfor %}
+            {% endif %}
           {% include 'comments.html' %}
         </div>
       </div>

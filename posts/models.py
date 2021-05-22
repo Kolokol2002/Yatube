@@ -31,6 +31,7 @@ class Post(models.Model):
 
 class Post(models.Model):
     '''Модель публикаций пользователей'''
+    # title = models.CharField(max_length=256, verbose_name="Заголовок")
     text = models.TextField(verbose_name="Текст")
     pub_date = models.DateTimeField(
         "Дата публикации", auto_now_add=True, db_index=True)
@@ -44,6 +45,7 @@ class Post(models.Model):
         upload_to='posts/', blank=True, verbose_name="Изображение")
 
     class Meta:
+        ordering = ('-pub_date',)
         verbose_name = "Публикация"
         verbose_name_plural = "Публикации"
 

@@ -10,7 +10,7 @@ class PostForm(forms.ModelForm):
     '''Форма создания публикации'''
     class Meta:
         model = Post
-        fields = ['group', 'text', 'image']
+        fields = ['text', 'group', 'image', ]
         widgets = {
             'group': forms.Select(attrs={'class': 'form-control'}),
             'text': forms.Textarea(attrs={'class': 'form-control'}),

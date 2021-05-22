@@ -6,17 +6,17 @@
 <main role="main" class="container">
   {% include "menu.html" with index=True %}
   <div class='table'>
-    {% if page %}
+    {% if post_list %}
       <h1> Последние публикации избранных авторов </h1>
-        {% for post in page %}
+        {% for post in post_list %}
           {% include "post_item.html" with post=post %}
         {% endfor %}
     {% else %}
       <h1> У вас пока нет избранных авторов </h1>
     {% endif %}
 
-    {% if page.has_other_pages %}
-      {% include "paginator.html" with items=page paginator=paginator %}
+    {% if post_list.has_other_pages %}
+      {% include "paginator.html" with items=post_list paginator=paginator %}
     {% endif %}
   </div>
 </main>
